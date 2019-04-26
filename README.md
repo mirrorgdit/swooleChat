@@ -17,7 +17,7 @@
 ### 安装
   
 ```
-git clone https://github.com/swoole/swoole-src.git
+git clone https://github.com/mirrorgdit/swooleChat.git
 ```
 ### 配置
 
