@@ -23,13 +23,13 @@ git clone https://github.com/swoole/swoole-src.git
 
  在 `server.php` 修改具体的配置
   ```
-     //websocket服务器 IP 端口
-     define("SERVER_IP",'192.168.2.99');
-     define("SERVER_PORT",'9501');
+//websocket服务器 IP 端口
+define("SERVER_IP",'192.168.2.99');
+define("SERVER_PORT",'9501');
 
-     //开启Redis服务 IP 端口
-    define("REDIS_IP",'192.168.2.99');
-    define("REDIS_PORT",'6379');
+//开启Redis服务 IP 端口
+define("REDIS_IP",'192.168.2.99');
+define("REDIS_PORT",'6379');
 
   ```
 
@@ -44,5 +44,6 @@ git clone https://github.com/swoole/swoole-src.git
 ### 测试
 
 ```
-http:/path/index.html
+直接访问测试页面访问
+http://path/index.html
 ```
