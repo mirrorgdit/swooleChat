@@ -16,27 +16,21 @@
  ```
 ### 安装
   
-composer执行
-
 ```
-composer require "jianyan74/yii2-websocket"
-```
-
-或者在 `composer.json` 加入
-
-```
-"jianyan74/yii2-websocket": "^1.0"
+git clone https://github.com/swoole/swoole-src.git
 ```
 ### 配置
 
- 在 `common/config/main.php` 加入以下配置
+ 在 `server.php` 修改具体的配置
   ```
-     'redis' => [
-         'class' => 'yii\redis\Connection',
-         'hostname' => 'localhost',
-         'port' => 6379,
-         'database' => 0,
-     ],
+     //websocket服务器 IP 端口
+     define("SERVER_IP",'192.168.2.99');
+     define("SERVER_PORT",'9501');
+
+     //开启Redis服务 IP 端口
+    define("REDIS_IP",'192.168.2.99');
+    define("REDIS_PORT",'6379');
+
   ```
 
  
@@ -44,15 +38,11 @@ composer require "jianyan74/yii2-websocket"
  
   ```
   # 启动 
-  php ./yii websocket/start
-  # 停止 
-  php ./yii websocket/stop
-  # 重启 
-  php ./yii websocket/restart
+  php server.php
    ```
    
 ### 测试
 
 ```
-
+http:/path/index.html
 ```
