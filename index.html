@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Chatroom</title>
+	<style type="text/css">
+	ul,p{
+		padding: 0px;
+		margin: 0px;
+	}
+	li{
+		list-style: none;
+	}
+	.content{
+		width: 850px;
+		height: 800px;
+		border-radius: 4px;
+		margin: 0 auto;
+	}
+	.content-left{
+		width: 262px;
+		float: left;
+	}
+	.content-left-panel-border{
+		width: 560px;
+		border-radius: 6px;
+		border: 1px solid #CCCCCC;
+	}
+	.content-left-panel{
+		width: 552px;
+		height: 610px;
+		background-color: #EEEEEE;
+		margin: 4px;
+	}
+	.content-left-people{
+		margin-top: 10px;
+		
+	}
+	..content-left-people select{
+		border-radius: 4px;
+		border: 1px solid #CBE3FC;
+	}
+	.content-left-input{
+		
+		margin-top: 10px;
+	}
+	.content-left-input textarea{
+		width: 554px;
+		height: 84px;
+		border: 1px solid #CCCCCC;
+	}
+	.content-left-send{
+		float: right;
+		width: 75px;
+		height: 28px;
+		border-radius: 2px;
+		text-align: center;
+		line-height: 28px;
+		margin-top: 5px;
+		font-size: 24px;
+		cursor: pointer;
+		border: 1px solid #CCCCCC;
+
+	}
+	.content-left-send:hover{
+		background-color: #3CD63C;
+		color: #FFFFFF;
+	}
+	.content-right{
+		float: right;
+		border: 1px solid #CCCCCC;
+		height: 618px;
+		/*width: 580px;*/
+		border-radius: 5px;
+	}
+	.content-right-list{
+		height: 610px;
+		width: 254px;
+		margin: 4px;
+		background-color: #EEEEEE;
+		overflow: auto;
+	}
+	.content-right-list p{
+		background-color: #DCE0E2;
+		border-radius: 4px;
+		text-align: center;
+		padding: 4px;
+	}
+	.content-right-list ul{
+		border: 1px solid #CCCCCC;
+		margin-top: 20px;
+		border-radius: 5px;
+	}
+	.content-right-list ul li{
+
+		text-align: center;
+		line-height: 28px;
+		cursor: pointer;
+	}
+	.content-right-list ul li:hover{
+		background-color: #8CA5AC;
+		color:#FFFFFF;
+		border-radius: 5px;
+	}
+	.content-left-panel ul{
+		width: 552px;
+		height: 610px;
+		overflow: auto;
+	}
+	.content-left-panel ul li{
+		width:100%;
+		height:100px;
+		margin-top: 14px;
+	}
+	.content-left-panel .people-info{
+		height: 40px;
+	}
+	.people-info-icon{
+		float: left;
+		width: 40px;
+		height: 40px;
+		background-color: #DCE0E2;
+	}
+	.people-info-name{
+		float: left;
+		height: 20px;
+		width: 80%;
+		text-indent: 4px;
+		color:#2DD571;
+	}
+	.people-info-time{
+		float: left;
+		height: 20px;
+		width: 80%;
+		text-indent: 4px;
+	}
+	.people-info-icon img{
+		border-radius: 20px;
+	}
+	.people-send{
+		height: 54px;
+		width: 100%;
+		margin-top: 6px;
+		border-radius: 6px;
+		background-color: #E0FFB2;
+	}
+	</style>
+</head>
+
+<body>
+	<div class="content">
+		<div class="content-left">
+			<div class="content-right-list">
+				<p>在线用户</p>
+				<ul id="peoples_list">
+				</ul>
+			</div>
+		</div>
+		<div class="content-right">
+			<!-- 聊天内容面板 -->
+			<div class="content-left-panel-border">
+				<div class="content-left-panel">
+					<ul id="content_left_panel">
+						
+					</ul>
+				</div>
+			</div>
+			<!-- 选择对话人 -->
+			<div class="content-left-people">
+				<select id="send_to">
+					
+				</select>
+			</div>
+			<!-- 输入信息 -->
+			<div class="content-left-input">
+				<textarea id="send_content"></textarea>
+			</div>
+			<!-- 发送 -->
+			<div id="send_message" class="content-left-send">
+				发送
+			</div>
+		</div>
+
+
+	</div>
+	<script type="text/javascript" src="jquery-2.1.4.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		var str = null,temp_select_list;
+		var name=prompt("输入您的昵称！");
+		// 创建一个Socket实例
+		var socket = new WebSocket('ws://192.168.2.99:9501'); 
+
+		// 打开Socket 
+		socket.onopen = function(event) { 
+
+		// 发送一个初始化消息
+		socket.send('{"type":"origin","name":"'+name+'"}');
+		}
+
+		// 监听消息
+		socket.onmessage = function(event) {
+			eval('('+event.data+')');
+			var message = eval('('+event.data+')');
+			if(message.type == 'system'){
+				//系统发送过来的消息
+				str = '<li><div class="people-info"><p class="people-info-icon"><img src="icon.jpg"></p><p class="people-info-name">系统管理员</p><p class="people-info-time">'+message.times+'</p></div><div class="people-send">'+message.message+'</div></li>';
+				$("#content_left_panel").append(str);
+				//刷新好友列表
+				var peoples_list = '',select_list = '<option value="0" selected>所有人</option>';
+				//获取到当前用户选择的值
+				var send_to_val = $("#send_to").val();
+				//临时保存便于双击好友名字后 select选项变换使用
+				temp_select_list = message.peoples_list;
+				for(var i in message.peoples_list){
+					peoples_list += '<li connect_id='+message["peoples_list"][i]["id"]+'>'+message["peoples_list"][i]["name"]+'</li>'
+					if(send_to_val != 0 && send_to_val == message["peoples_list"][i]["id"]){
+						select_list += '<option selected value='+message["peoples_list"][i]["id"]+'>'+message["peoples_list"][i]["name"]+'</option>';
+					}else{
+						select_list += '<option value='+message["peoples_list"][i]["id"]+'>'+message["peoples_list"][i]["name"]+'</option>';
+					}
+					
+				}
+				$("#peoples_list").empty().append(peoples_list);
+				$("#send_to").empty().append(select_list);
+			}else if(message.type == 'message'){//正常对话操作
+				str = '<li><div class="people-info"><p class="people-info-icon"><img src="icon2.jpg"></p><p class="people-info-name">'+message.name+'</p><p class="people-info-time">'+message.times+'</p></div><div class="people-send">'+message.message+'</div></li>';
+				$("#content_left_panel").append(str);
+			}
+
+			console.log(event.data);
+		//console.log('Client received a message',event); 
+		}; 
+
+		// 监听Socket的关闭
+		socket.onclose = function(event) { 
+		console.log('Client notified socket has closed',event); 
+		};
+
+		//异常处理
+		socket.onerror =function(event){
+		    $("#content_left_panel").html("链接失败,稍后重试~~");
+		};
+		//点击发送按钮
+		$("#send_message").click(function(){
+			var send_to = $("#send_to").val();
+			var send_content = $("#send_content").val();
+			socket.send('{"type":"message","sendto":"'+send_to+'","message":"'+send_content+'"}');
+			console.log("send_message");
+		});
+		//点击用户单独发送 下面的选择项跟着变
+		$("#peoples_list").delegate("li","dblclick",function(){
+		  console.log($(this).attr("connect_id"));
+		  var connect_id = $(this).attr("connect_id");
+		  var temp_select_list_str = '<option value="0">所有人</option>';
+		  for(var i in temp_select_list){
+		  	if(connect_id == temp_select_list[i]['id']){
+		  		temp_select_list_str += '<option selected value='+temp_select_list[i]['id']+'>'+temp_select_list[i]['name']+'</option>';
+		  	}else{
+		  		temp_select_list_str += '<option value='+temp_select_list[i]['id']+'>'+temp_select_list[i]['name']+'</option>';
+		  	}
+		  }
+		  $("#send_to").empty().append(temp_select_list_str);
+		});
+	});
+	</script>
+</body>
+</html>
