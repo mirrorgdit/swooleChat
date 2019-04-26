@@ -44,6 +44,6 @@ define("REDIS_PORT",'6379');
 ### 测试
 
 ```
-直接访问测试页面访问
+直接访问测试页面
 http://path/index.html
 ```
